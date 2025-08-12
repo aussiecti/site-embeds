@@ -10,46 +10,41 @@
 
   <!-- Transparent background inside the iframe -->
   <style>
-html, body { background: transparent !important; height: 100%; margin: 0; overflow-x: hidden;}
+    html, body { background: transparent !important; height: 100%; }
     body { margin: 0; font-family: 'Roboto', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
     h1, h2, h3, h4, h5, h6 { font-family: 'Lexend', sans-serif; font-weight: 600; }
-    /* Prevent padding from causing overflow */
-*, *::before, *::after { box-sizing: border-box; }
 
     /* --- Layout --- */
-/* was: .wrap { min-height: 100vh; ... } */
-.wrap {
-  min-height: 100%;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 24px;
-  align-items: start;
-  padding: 24px;
-  box-sizing: border-box;
-}
-
+    .wrap {
+      min-height: 100vh;           /* make the section fill the viewport */
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr; /* left / middle (empty) / right */
+      gap: 24px;
+      align-items: start;
+      padding: 24px;
+      box-sizing: border-box;
+    }
 
     .col-left { grid-column: 1; }
-   /* was: .col-right { min-height: 70vh; ... } */
-.col-right {
-  grid-column: 3;
-  position: relative;
-  min-height: auto;           /* key change */
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-}
+    .col-right {
+      grid-column: 3;
+      position: relative;          /* lets the panel position from this column */
+      min-height: 70vh;            /* ensures a tall right column on desktop */
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;       /* logo hugs the right edge */
+    }
 
     /* --- Left top: image inline with heading text --- */
     .left-top {
       display: flex;
       align-items: center;
       gap: 16px;
-      flex-wrap: wrap;
+      flex-wrap: wrap;             /* avoid overflow on narrower widths */
       max-width: 680px;
     }
     .left-top img.header-mark {
-      height: 56px;                      /* adjust to taste */
+      height: 56px;                /* adjust to taste */
       width: auto;
     }
     .left-top h1 {
@@ -67,18 +62,17 @@ html, body { background: transparent !important; height: 100%; margin: 0; overfl
       max-width: 240px;
       height: auto;
       object-fit: contain;
-      margin-bottom: 8px;
     }
 
-    /* --- Rising panel (desktop/tablet behavior) --- */
+    /* --- Rising panel --- */
     .panel {
       position: absolute;
       left: 0;
       right: 0;
       margin-left: auto;
-      margin-right: 0;                   /* align to right edge by default */
+      margin-right: 0;        /* align to the right edge by default */
       width: min(520px, 100%);
-      bottom: -220px;                    /* start hidden below the column */
+      bottom: -220px;         /* start below view of the column */
       background: rgba(255,255,255,0.78);
       backdrop-filter: blur(8px);
       border-radius: 16px;
@@ -86,7 +80,7 @@ html, body { background: transparent !important; height: 100%; margin: 0; overfl
       padding: 20px 20px 14px;
       transition: bottom 700ms cubic-bezier(.22,.84,.37,1);
     }
-    .panel.risen { bottom: 10px; }       /* sits 10px above bottom on desktop */
+    .panel.risen { bottom: 10px; } /* sits 10px above bottom */
 
     /* content reveal */
     .panel h2, .panel p, .thumbs { opacity: 0; transition: opacity 420ms ease; }
@@ -106,10 +100,6 @@ html, body { background: transparent !important; height: 100%; margin: 0; overfl
       font-size: clamp(14px, 1.8vw, 16px);
       line-height: 1.45;
     }
-    
-    @media (max-width: 767.98px) {
-  .panel { width: 100%; max-width: 100%; }
-}
 
     /* Thumbs with rollover effect */
     .thumbs {
@@ -136,63 +126,32 @@ html, body { background: transparent !important; height: 100%; margin: 0; overfl
     .thumb:hover { transform: translateY(0); box-shadow: 0 8px 22px rgba(0,0,0,0.15); }
     .thumb:hover img { filter: none; transform: scale(1.04); }
 
-@media (max-width: 767.98px) {
-  /* Avoid vh inside an iframe on mobile to prevent nested scrollbars */
-  .wrap {
-    grid-template-columns: 1fr;
-    gap: 16px;
-    padding: 16px;
-    min-height: auto;           /* was min-height:100vh somewhere up top */
-  }
+    /* --- Responsive: phones stack left then right, panel fixed to viewport --- */
+    @media (max-width: 767.98px) {
+      .wrap {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        padding: 16px;
+      }
+      .col-left, .col-right { grid-column: 1; }
+      .col-right {
+        align-items: flex-start;   /* logo aligns left on mobile */
+        min-height: 40vh;
+      }
+      .right-logo { width: 42%; }  /* a bit larger on mobile */
+      .panel {
+        position: fixed;           /* ensure it sits 10px above *screen* bottom */
+        left: 4vw; right: 4vw;     /* keep nice margins */
+        width: auto;
+        bottom: -240px;
+      }
+      .panel.risen { bottom: 10px; }
+    }
 
-  .col-left, .col-right { grid-column: 1; }
-  .col-right {
-    align-items: flex-start;
-    min-height: auto;           /* was forcing height before */
-    padding-bottom: 0;          /* no need to reserve space on mobile */
-  }
-
-  .right-logo { width: 42%; }
-
-  /* Panel sits BELOW logo, in normal flow; no inner scrollbar */
-  .panel {
-    position: relative;         /* not absolute/fixed */
-    left: auto; right: auto; width: 100%;
-    bottom: auto;
-    margin-top: 16px;
-    max-height: none;
-    overflow: visible;          /* ensure no internal scroll */
-    transform: translateY(40px);
-    transition: transform 700ms cubic-bezier(.22,.84,.37,1), opacity 420ms ease;
-    opacity: 0;
-  }
-  .panel.risen {
-    transform: translateY(0);
-    opacity: 1;
-  }
-
-  /* Keep content fade-in */
-  .panel.ready h2,
-  .panel.ready p,
-  .panel.ready .thumbs { opacity: 1; }
-}
-
-
-   /* Tablet: give the right column bottom padding so the absolute panel has room */
-/* Tablet: reserve space for the absolute panel so it can't overlap the logo */
-@media (min-width: 768px) and (max-width: 991.98px) {
-  .col-right { padding-bottom: 280px; } /* was 240px */
-  .panel { width: min(500px, 100%); }
-}
-
-/* Desktop: a bit more room so panel sits lower */
-@media (min-width: 992px) and (max-width: 1399.98px) {
-  .col-right { padding-bottom: 440px; } /* was 280px */
-  .panel { width: min(520px, 100%); }
-}
-@media (min-width: 1400px) {
-  .col-right { padding-bottom: 420px; } /* was 320px */
-}
+    /* Tablet/Desktop spacing tweaks */
+    @media (min-width: 768px) and (max-width: 991.98px) {
+      .col-right { min-height: 60vh; }
+    }
   </style>
 </head>
 <body>
@@ -242,11 +201,9 @@ html, body { background: transparent !important; height: 100%; margin: 0; overfl
     window.addEventListener('load', () => {
       const panel = document.getElementById('panel');
 
-      // Start animation after a short delay
       setTimeout(() => {
         panel.classList.add('risen');
 
-        // Robust reveal: try transitionend, also fallback by timeout
         let revealed = false;
         const reveal = () => {
           if (revealed) return;
@@ -254,12 +211,10 @@ html, body { background: transparent !important; height: 100%; margin: 0; overfl
           panel.classList.add('ready');
         };
 
-        // On desktop/tablet, bottom transition fires; on mobile we rely on fallback
         panel.addEventListener('transitionend', (e) => {
-          if (e.propertyName === 'bottom' || e.propertyName === 'transform') reveal();
+          if (e.propertyName === 'bottom') reveal();
         });
-
-        setTimeout(reveal, 900); // fallback if transitionend is skipped
+        setTimeout(reveal, 900); // fallback in case transitionend is skipped
       }, 2200);
     });
   </script>
