@@ -10,30 +10,39 @@
 
   <!-- Transparent background inside the iframe -->
   <style>
-html, body { background: transparent !important; height: auto; }
+html, body { background: transparent !important; height: 100%; margin: 0; overflow-x: hidden;}
     body { margin: 0; font-family: 'Roboto', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
     h1, h2, h3, h4, h5, h6 { font-family: 'Lexend', sans-serif; font-weight: 600; }
+    /* Prevent padding from causing overflow */
+*, *::before, *::after { box-sizing: border-box; }
 
     /* --- Layout --- */
-    .wrap {
-      min-height: 100vh;                 /* fill viewport */
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;/* left / middle / right */
-      gap: 24px;
-      align-items: start;
-      padding: 24px;
-      box-sizing: border-box;
-    }
+/* was: .wrap { min-height: 100vh; ... } */
+.wrap {
+  min-height: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 24px;
+  align-items: start;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+/* dynamic viewport units where supported */
+@supports (min-height: 100dvh) {
+  .wrap { min-height: 100dvh; }
+}
 
     .col-left { grid-column: 1; }
-    .col-right {
-      grid-column: 3;
-      position: relative;                /* panel positions within this column */
-      min-height: 70vh;                  /* ensures room for panel on desktop */
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;             /* logo hugs right edge */
-    }
+   /* was: .col-right { min-height: 70vh; ... } */
+.col-right {
+  grid-column: 3;
+  position: relative;
+  min-height: auto;           /* key change */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
 
     /* --- Left top: image inline with heading text --- */
     .left-top {
@@ -62,6 +71,7 @@ html, body { background: transparent !important; height: auto; }
       max-width: 240px;
       height: auto;
       object-fit: contain;
+      margin-bottom: 8px;
     }
 
     /* --- Rising panel (desktop/tablet behavior) --- */
@@ -100,6 +110,10 @@ html, body { background: transparent !important; height: auto; }
       font-size: clamp(14px, 1.8vw, 16px);
       line-height: 1.45;
     }
+    
+    @media (max-width: 767.98px) {
+  .panel { width: 100%; max-width: 100%; }
+}
 
     /* Thumbs with rollover effect */
     .thumbs {
@@ -169,16 +183,19 @@ html, body { background: transparent !important; height: auto; }
 
 
    /* Tablet: give the right column bottom padding so the absolute panel has room */
+/* Tablet: reserve space for the absolute panel so it can't overlap the logo */
 @media (min-width: 768px) and (max-width: 991.98px) {
-  .col-right { padding-bottom: 240px; } /* ~panel height */
+  .col-right { padding-bottom: 280px; } /* was 240px */
+  .panel { width: min(500px, 100%); }
 }
 
-/* Desktop and up: a bit more room */
-@media (min-width: 992px) {
-  .col-right { padding-bottom: 280px; }
+/* Desktop: a bit more room so panel sits lower */
+@media (min-width: 992px) and (max-width: 1399.98px) {
+  .col-right { padding-bottom: 440px; } /* was 280px */
+  .panel { width: min(520px, 100%); }
 }
 @media (min-width: 1400px) {
-  .col-right { padding-bottom: 320px; }
+  .col-right { padding-bottom: 420px; } /* was 320px */
 }
   </style>
 </head>
