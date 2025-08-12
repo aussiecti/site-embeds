@@ -10,7 +10,7 @@
 
   <!-- Transparent background inside the iframe -->
   <style>
-    html, body { background: transparent !important; height: 100%; }
+html, body { background: transparent !important; height: auto; }
     body { margin: 0; font-family: 'Roboto', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
     h1, h2, h3, h4, h5, h6 { font-family: 'Lexend', sans-serif; font-weight: 600; }
 
@@ -126,46 +126,60 @@
     .thumb:hover { transform: translateY(0); box-shadow: 0 8px 22px rgba(0,0,0,0.15); }
     .thumb:hover img { filter: none; transform: scale(1.04); }
 
-    /* --- Mobile: stack columns; panel sits BELOW logo in normal flow --- */
-    @media (max-width: 767.98px) {
-      .wrap {
-        grid-template-columns: 1fr;
-        gap: 16px;
-        padding: 16px;
-      }
-      .col-left, .col-right { grid-column: 1; }
-      .col-right {
-        align-items: flex-start;         /* logo aligns left on mobile */
-        min-height: auto;                /* don't force tall right col */
-      }
-      .right-logo { width: 42%; }        /* a bit larger on mobile */
+@media (max-width: 767.98px) {
+  /* Avoid vh inside an iframe on mobile to prevent nested scrollbars */
+  .wrap {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 16px;
+    min-height: auto;           /* was min-height:100vh somewhere up top */
+  }
 
-      /* Panel is part of the flow below the logo; slide up via transform */
-      .panel {
-        position: relative;              /* not absolute/fixed on mobile */
-        left: auto; right: auto;
-        width: 100%;
-        bottom: auto;                    /* ignore bottom animation */
-        margin-top: 16px;                /* space below logo */
-        transform: translateY(40px);     /* start slightly lower for rise effect */
-        transition: transform 700ms cubic-bezier(.22,.84,.37,1), opacity 420ms ease;
-        opacity: 0;
-      }
-      .panel.risen {
-        transform: translateY(0);        /* slide up into place */
-        opacity: 1;
-      }
+  .col-left, .col-right { grid-column: 1; }
+  .col-right {
+    align-items: flex-start;
+    min-height: auto;           /* was forcing height before */
+    padding-bottom: 0;          /* no need to reserve space on mobile */
+  }
 
-      /* Ensure content fade-in still occurs */
-      .panel.ready h2,
-      .panel.ready p,
-      .panel.ready .thumbs { opacity: 1; }
-    }
+  .right-logo { width: 42%; }
 
-    /* Tablet/Desktop spacing tweak */
-    @media (min-width: 768px) and (max-width: 991.98px) {
-      .col-right { min-height: 60vh; }
-    }
+  /* Panel sits BELOW logo, in normal flow; no inner scrollbar */
+  .panel {
+    position: relative;         /* not absolute/fixed */
+    left: auto; right: auto; width: 100%;
+    bottom: auto;
+    margin-top: 16px;
+    max-height: none;
+    overflow: visible;          /* ensure no internal scroll */
+    transform: translateY(40px);
+    transition: transform 700ms cubic-bezier(.22,.84,.37,1), opacity 420ms ease;
+    opacity: 0;
+  }
+  .panel.risen {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  /* Keep content fade-in */
+  .panel.ready h2,
+  .panel.ready p,
+  .panel.ready .thumbs { opacity: 1; }
+}
+
+
+   /* Tablet: give the right column bottom padding so the absolute panel has room */
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .col-right { padding-bottom: 240px; } /* ~panel height */
+}
+
+/* Desktop and up: a bit more room */
+@media (min-width: 992px) {
+  .col-right { padding-bottom: 280px; }
+}
+@media (min-width: 1400px) {
+  .col-right { padding-bottom: 320px; }
+}
   </style>
 </head>
 <body>
