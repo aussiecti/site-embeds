@@ -69,21 +69,32 @@
   </header>
 
   <script>
-    // Wait a bit after load, then raise the panel
-    window.addEventListener('load', () => {
-      const panel = document.getElementById('panel');
-      setTimeout(() => {
-        panel.classList.add('risen');
-      }, 2500);
+  window.addEventListener('load', () => {
+    const panel = document.getElementById('panel');
 
-      // When the rise transition ends, reveal content
+    // Start the rise after 2.5s
+    setTimeout(() => {
+      panel.classList.add('risen');
+
+      // Robust reveal strategy:
+      // 1) Try transitionend (best when animations run)
+      // 2) Also force a fallback after ~850ms in case transitionend never fires
+      let revealed = false;
+      const reveal = () => {
+        if (revealed) return;
+        revealed = true;
+        panel.classList.add('ready');
+      };
+
       panel.addEventListener('transitionend', (e) => {
-        if (e.propertyName === 'bottom') {
-          panel.classList.add('ready');
-        }
-      }, { once: true });
-    });
-  </script>
+        if (e.propertyName === 'bottom') reveal();
+      });
+
+      setTimeout(reveal, 850); // fallback reveal
+    }, 2500);
+  });
+</script>
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
