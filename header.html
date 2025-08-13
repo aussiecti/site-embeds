@@ -1,3 +1,14 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Aussie CTI – Header Embed</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@600&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- Transparent background inside the iframe -->
 <style>
   /* Global reset + transparent bg for Sites */
   *, *::before, *::after { box-sizing: border-box; }
@@ -180,3 +191,75 @@
     .col-right { padding-bottom: 460px; }
   }
 </style>
+
+</head>
+<body>
+  <section class="wrap" role="region" aria-label="Hero">
+    <!-- LEFT THIRD -->
+    <div class="col-left">
+      <div class="left-top">
+        <img class="header-mark"
+             src="https://res.cloudinary.com/ddkor0br0/image/upload/v1754972785/headertext_rebmeq.png"
+             alt="Header graphic">
+        <h1>
+          Drive with the<br>
+          true <span class="blue">blue</span><br>
+          advantage
+        </h1>
+      </div>
+    </div>
+
+    <!-- RIGHT THIRD -->
+    <div class="col-right">
+      <img class="right-logo"
+           src="https://res.cloudinary.com/ddkor0br0/image/upload/v1754972552/logo_sticker_transparent_wvcvvj.png"
+           alt="Aussie CTI logo">
+
+      <!-- Rising panel -->
+      <div id="panel" class="panel" aria-live="polite">
+        <h2>Built for Australian Conditions</h2>
+        <p>
+          Adjust pressures on the move at the push of a button. Each system is tailored to your setup,
+          with customisable high, medium and low presets—plus the flexibility to fine-tune pressures
+          using the rotary dial. Available in single, dual or multi-zone configurations to suit everything
+          from small rigids to full road trains.
+        </p>
+
+        <div class="thumbs">
+          <!-- Replace these with your real assets -->
+          <div class="thumb"><img src="https://picsum.photos/seed/cti1/200" alt="Feature 1"></div>
+          <div class="thumb"><img src="https://picsum.photos/seed/cti2/200" alt="Feature 2"></div>
+          <div class="thumb"><img src="https://picsum.photos/seed/cti3/200" alt="Feature 3"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Animation: rise + robust reveal -->
+  <script>
+    window.addEventListener('load', () => {
+      const panel = document.getElementById('panel');
+
+      // Start animation after a short delay
+      setTimeout(() => {
+        panel.classList.add('risen');
+
+        // Robust reveal: try transitionend, also fallback by timeout
+        let revealed = false;
+        const reveal = () => {
+          if (revealed) return;
+          revealed = true;
+          panel.classList.add('ready');
+        };
+
+        // On desktop/tablet, bottom transition fires; on mobile we rely on fallback
+        panel.addEventListener('transitionend', (e) => {
+          if (e.propertyName === 'bottom' || e.propertyName === 'transform') reveal();
+        });
+
+        setTimeout(reveal, 900); // fallback if transitionend is skipped
+      }, 2200);
+    });
+  </script>
+</body>
+</html>
