@@ -16,20 +16,19 @@
     background: transparent !important;
     height: 100%;
     margin: 0;
-    overflow-x: hidden; /* prevent horizontal scroll on mobile */
+    overflow-x: hidden; /* prevent horizontal scroll */
   }
   body {
-    display: flex;          /* key: make page a flex column */
-    min-height: 100%;       /* so children can stretch to iframe height */
     font-family: 'Roboto', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   }
-  h1, h2, h3, h4, h5, h6 { font-family: 'Lexend', sans-serif; font-weight: 600; }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Lexend', sans-serif;
+    font-weight: 600;
+  }
 
-  /* --- Layout --- */
+  /* --- Layout wrapper --- */
   .wrap {
-    /* key: stretch to fill the flex parent (the body) */
-    flex: 1 1 auto;
-    min-height: 100%;       /* fallback for older engines */
+    min-height: 100%; /* fill iframe height */
     display: grid;
     grid-template-columns: 1fr 1fr 1fr; /* left / middle / right */
     gap: 24px;
@@ -38,20 +37,14 @@
     box-sizing: border-box;
   }
 
-  /* Use dynamic viewport units only when supported (outside Sites this helps Safari) */
-  @supports (min-height: 100dvh) {
-    .wrap { min-height: 100dvh; }
-  }
-
   .col-left { grid-column: 1; }
 
+  /* Right column as 3-row grid: logo / spacer / panel */
   .col-right {
     grid-column: 3;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    /* padding-bottom set per breakpoint below to reserve space for the absolute panel */
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    align-items: start;
   }
 
   /* --- Left top: image inline with heading text --- */
@@ -78,26 +71,26 @@
     max-width: 240px;
     height: auto;
     object-fit: contain;
-    margin-bottom: 8px;  /* breathing room above panel */
+    margin-bottom: 8px;
   }
 
-  /* --- Rising panel (desktop/tablet behavior) --- */
+  /* Spacer row in right column */
+  .spacer { min-height: 0; }
+
+  /* --- Panel (all breakpoints use transform/opacity animation) --- */
   .panel {
-    position: absolute;
-    left: 0;
-    right: 0;
-    margin-left: auto;
-    margin-right: 0;                   /* align to right edge by default */
+    position: relative;
     width: min(520px, 100%);
-    bottom: -220px;                    /* start hidden below the column */
     background: rgba(255,255,255,0.78);
     backdrop-filter: blur(8px);
     border-radius: 16px;
     box-shadow: 0 18px 40px rgba(0,0,0,0.28);
     padding: 20px 20px 14px;
-    transition: bottom 700ms cubic-bezier(.22,.84,.37,1);
+    transform: translateY(40px);
+    opacity: 0;
+    transition: transform 700ms cubic-bezier(.22,.84,.37,1), opacity 420ms ease;
   }
-  .panel.risen { bottom: 10px; }       /* sits 10px above bottom on desktop */
+  .panel.risen { transform: translateY(0); opacity: 1; }
 
   /* content reveal */
   .panel h2, .panel p, .thumbs { opacity: 0; transition: opacity 420ms ease; }
@@ -127,7 +120,8 @@
   }
   .thumb {
     width: 88px; aspect-ratio: 1/1;
-    border-radius: 12px; overflow: hidden;
+    border-radius: 12px;
+    overflow: hidden;
     background: #eef2f7;
     box-shadow: inset 0 0 0 1px rgba(0,0,0,0.06);
     cursor: pointer;
@@ -135,60 +129,47 @@
     transition: transform 180ms ease, box-shadow 180ms ease;
   }
   .thumb img {
-    width: 100%; height: 100%; object-fit: cover; display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
     filter: grayscale(100%);
     transition: transform 220ms ease, filter 220ms ease;
   }
   .thumb:hover { transform: translateY(0); box-shadow: 0 8px 22px rgba(0,0,0,0.15); }
   .thumb:hover img { filter: none; transform: scale(1.04); }
 
-  /* ===================== Breakpoints ===================== */
-
-  /* Phones: stack, panel BELOW logo in normal flow (no absolute/fixed), no inner scroll */
+  /* --- Mobile: stack, panel below logo, same animation --- */
   @media (max-width: 767.98px) {
     .wrap {
       grid-template-columns: 1fr;
       gap: 16px;
       padding: 16px;
-      min-height: auto; /* avoid vh quirks in iframes */
+      min-height: auto;
     }
     .col-left, .col-right { grid-column: 1; }
-    .col-right {
-      align-items: flex-start;
-      padding-bottom: 0;    /* no need to reserve space on mobile */
-    }
+    .col-right { grid-template-rows: auto auto auto; }
     .right-logo { width: 42%; }
     .panel {
-      position: relative;   /* normal flow */
-      left: auto; right: auto;
-      width: 100%; max-width: 100%;
-      bottom: auto;
+      width: 100%;
+      max-width: 100%;
       margin-top: 16px;
-      max-height: none;
-      overflow: visible;
-      transform: translateY(40px);
-      transition: transform 700ms cubic-bezier(.22,.84,.37,1), opacity 420ms ease;
-      opacity: 0;
     }
-    .panel.risen { transform: translateY(0); opacity: 1; }
-    .panel.ready h2, .panel.ready p, .panel.ready .thumbs { opacity: 1; }
   }
 
-  /* Tablet: reserve space so absolute panel won't overlap the logo */
+  /* Tablet adjustments */
   @media (min-width: 768px) and (max-width: 991.98px) {
-    .col-right { padding-bottom: 300px; } /* tuned up a bit to clear logo */
     .panel { width: min(500px, 100%); }
   }
 
-  /* Desktop: more room so panel sits lower (looks bottom-anchored) */
+  /* Desktop adjustments */
   @media (min-width: 992px) and (max-width: 1399.98px) {
-    .col-right { padding-bottom: 380px; } /* increase if your copy grows */
     .panel { width: min(520px, 100%); }
   }
 
-  /* ≥1400: even more reserved space to feel “at bottom of page” */
+  /* Very large screens */
   @media (min-width: 1400px) {
-    .col-right { padding-bottom: 460px; }
+    .panel { width: min(560px, 100%); }
   }
 </style>
 
@@ -216,7 +197,8 @@
            alt="Aussie CTI logo">
 
       <!-- Rising panel -->
-      <div id="panel" class="panel" aria-live="polite">
+	<div class="spacer" aria-hidden="true"></div>     
+	 <div id="panel" class="panel" aria-live="polite">
         <h2>Built for Australian Conditions</h2>
         <p>
           Adjust pressures on the move at the push of a button. Each system is tailored to your setup,
