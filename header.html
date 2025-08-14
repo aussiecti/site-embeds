@@ -10,149 +10,76 @@
 
   <!-- Transparent background inside the iframe -->
   <style>
-    html, body { background: transparent !important; height: 100%; }
-    body { margin: 0; font-family: 'Roboto', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
-    h1, h2, h3, h4, h5, h6 { font-family: 'Lexend', sans-serif; font-weight: 600; }
+  html, body { background: transparent !important; height: 100%; }
+  body { margin: 0; font-family: 'Roboto', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+  h1, h2, h3, h4, h5, h6 { font-family: 'Lexend', sans-serif; font-weight: 600; }
 
-    /* --- Layout --- */
-    .wrap {
-      min-height: 100vh;           /* make the section fill the viewport */
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr; /* left / middle (empty) / right */
-      gap: 24px;
-      align-items: start;
-      padding: 24px;
-      box-sizing: border-box;
-    }
+  /* ---- Layout ---- */
+  .wrap {
+    min-height: 100%;                      /* was 100vh: avoids extra scroll inside iframe */
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 24px;
+    align-items: start;
+    padding: 24px;
+    box-sizing: border-box;
+  }
+  /* Progressive enhancement for modern browsers (safe in Sites too) */
+  @supports (min-height: 100dvh) {
+    .wrap { min-height: 100dvh; }
+  }
 
-    .col-left { grid-column: 1; }
-    .col-right {
-      grid-column: 3;
-      position: relative;          /* lets the panel position from this column */
-      min-height: 70vh;            /* ensures a tall right column on desktop */
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;       /* logo hugs the right edge */
-    }
+  .col-left { grid-column: 1; }
+  .col-right {
+    grid-column: 3;
+    position: relative;                    /* panel will be absolute within here */
+    /* REMOVED min-height: 70vh; to prevent overflow */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
 
-    /* --- Left top: image inline with heading text --- */
-    .left-top {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      flex-wrap: wrap;             /* avoid overflow on narrower widths */
-      max-width: 680px;
-    }
-    .left-top img.header-mark {
-      height: 56px;                /* adjust to taste */
-      width: auto;
-    }
-    .left-top h1 {
-      margin: 0;
-      line-height: 1.1;
-      font-size: clamp(28px, 4vw, 54px);
-      color: #111;
-    }
-    .left-top h1 .blue { color: #2563eb; } /* “true blue” highlight */
+  /* Left side headline + mark */
+  .left-top {
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap; max-width: 680px;
+  }
+  .left-top img.header-mark { height: 56px; width: auto; }
+  .left-top h1 { margin: 0; line-height: 1.1; font-size: clamp(28px, 4vw, 54px); color: #111; }
+  .left-top h1 .blue { color: #2563eb; }
 
-    /* --- Right top: logo sized to ~30% of that third --- */
-    .right-logo {
-      width: 30%;
-      min-width: 120px;
-      max-width: 240px;
-      height: auto;
-      object-fit: contain;
-    }
+  /* Right sticker logo */
+  .right-logo {
+    width: 30%; min-width: 120px; max-width: 240px; height: auto; object-fit: contain;
+  }
 
-    /* --- Rising panel --- */
-    .panel {
-      position: absolute;
-      left: 0;
-      right: 0;
-      margin-left: auto;
-      margin-right: 0;        /* align to the right edge by default */
-      width: min(520px, 100%);
-      bottom: -220px;         /* start below view of the column */
-      background: rgba(255,255,255,0.78);
-      backdrop-filter: blur(8px);
-      border-radius: 16px;
-      box-shadow: 0 18px 40px rgba(0,0,0,0.28);
-      padding: 20px 20px 14px;
-      transition: bottom 700ms cubic-bezier(.22,.84,.37,1);
-    }
-    .panel.risen { bottom: 10px; } /* sits 10px above bottom */
+  /* Rising panel (tablet/desktop) */
+  .panel {
+    position: absolute;
+    left: 0; right: 0; margin-left: auto; margin-right: 0; /* align to right edge */
+    width: min(520px, 100%);
+    bottom: -220px;                                /* start hidden */
+    background: rgba(255,255,255,0.78);
+    backdrop-filter: blur(8px);
+    border-radius: 16px;
+    box-shadow: 0 18px 40px rgba(0,0,0,0.28);
+    padding: 20px 20px 14px;
+    transition: bottom 700ms cubic-bezier(.22,.84,.37,1);
+  }
+  .panel.risen { bottom: 10px; }
 
-    /* content reveal */
-    .panel h2, .panel p, .thumbs { opacity: 0; transition: opacity 420ms ease; }
-    .panel.ready h2,
-    .panel.ready p { opacity: 1; }
-    .panel.ready .thumbs { opacity: 1; transition-delay: 120ms; }
+  /* Reveal */
+  .panel h2, .panel p, .thumbs { opacity: 0; transition: opacity 420ms ease; }
+  .panel.ready h2, .panel.ready p { opacity: 1; }
+  .panel.ready .thumbs { opacity: 1; transition-delay: 120ms; }
 
-    .panel h2 {
-      margin: 0 0 6px 0;
-      font-size: clamp(18px, 2.4vw, 24px);
-      color: #111;
-      text-align: left;
-    }
-    .panel p {
-      margin: 0 0 10px 0;
-      color: #2b2b2b;
-      font-size: clamp(14px, 1.8vw, 16px);
-      line-height: 1.45;
-    }
+  .panel h2 { margin: 0 0 6px; font-size: clamp(18px, 2.4vw, 24px); color: #111; text-align: left; }
+  .panel p  { margin: 0 0 10px; color: #2b2b2b; font-size: clamp(14px, 1.8vw, 16px); line-height: 1.45; }
 
-    /* Thumbs with rollover effect */
-    .thumbs {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      justify-content: flex-start;
-      margin-top: 6px;
-    }
-    .thumb {
-      width: 88px; aspect-ratio: 1/1;
-      border-radius: 12px; overflow: hidden;
-      background: #eef2f7;
-      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.06);
-      cursor: pointer;
-      transform: translateY(4px);
-      transition: transform 180ms ease, box-shadow 180ms ease;
-    }
-    .thumb img {
-      width: 100%; height: 100%; object-fit: cover; display: block;
-      filter: grayscale(100%);
-      transition: transform 220ms ease, filter 220ms ease;
-    }
-    .thumb:hover { transform: translateY(0); box-shadow: 0 8px 22px rgba(0,0,0,0.15); }
-    .thumb:hover img { filter: none; transform: scale(1.04); }
+  /* Thumbs */
+  .thumbs { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-start; margin-top: 6px; }
+  .thumb { width: 88px; aspect-ratio: 1/1; border-radius: 12px; overflow: hidden; background: #eef2f7;
+           box-shadow: inset 0 0 0 1px rgba(0,0,0,0.06); cursor: pointer; transform:
 
-    /* --- Responsive: phones stack left then right, panel fixed to viewport --- */
-    @media (max-width: 767.98px) {
-      .wrap {
-        grid-template-columns: 1fr;
-        gap: 16px;
-        padding: 16px;
-      }
-      .col-left, .col-right { grid-column: 1; }
-      .col-right {
-        align-items: flex-start;   /* logo aligns left on mobile */
-        min-height: 40vh;
-      }
-      .right-logo { width: 42%; }  /* a bit larger on mobile */
-      .panel {
-        position: fixed;           /* ensure it sits 10px above *screen* bottom */
-        left: 4vw; right: 4vw;     /* keep nice margins */
-        width: auto;
-        bottom: -240px;
-      }
-      .panel.risen { bottom: 10px; }
-    }
-
-    /* Tablet/Desktop spacing tweaks */
-    @media (min-width: 768px) and (max-width: 991.98px) {
-      .col-right { min-height: 60vh; }
-    }
-  </style>
 </head>
 <body>
   <section class="wrap" role="region" aria-label="Hero">
