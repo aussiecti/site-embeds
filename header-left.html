@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Aussie CTI – Header Embed</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@600&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- Transparent background inside the iframe -->
+  <style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { background: transparent !important; height: 100%; }
+  body { margin: 0; font-family: 'Roboto', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; overflow-x: hidden;}
+  h1, h2, h3, h4, h5, h6 { font-family: 'Lexend', sans-serif; font-weight: 600; }
+
+  /* ---- Layout ---- */
+  .wrap {
+    min-height: 100%;                      /* was 100vh: avoids extra scroll inside iframe */
+    display: grid;
+    gap: 24px;
+    align-items: stretch;
+    padding: 24px;
+    box-sizing: border-box;
+  }
+  /* Progressive enhancement for modern browsers (safe in Sites too) */
+  @supports (min-height: 100dvh) {
+    .wrap { min-height: 100dvh; }
+  }
+
+  .col-left {  }
+
+
+  /* Left side headline + mark */
+  .left-top {
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap; max-width: 680px;
+  }
+  .left-top img.header-mark { height: 56px; width: auto; }
+  .left-top h1 { margin: 0; line-height: 1.1; font-size: clamp(28px, 4vw, 54px); color: #111; }
+  .left-top h1 .blue { color: #2563eb; }
+
+
+
+  /* ---- Mobile (stack, no fixed panel) ---- */
+  @media (max-width: 767.98px) {
+    .wrap {
+      gap: 16px;
+      padding: 16px;
+      min-height: auto;                     /* avoid forcing height on phones */
+    }
+
+</style>
+
+</head>
+<body>
+  <section class="wrap" role="region" aria-label="Hero">
+    <!-- LEFT THIRD -->
+    <div class="col-left">
+      <div class="left-top">
+        <img class="header-mark"
+             src="https://res.cloudinary.com/ddkor0br0/image/upload/v1754972785/headertext_rebmeq.png"
+             alt="Header graphic">
+        <h1>
+          Drive with the<br>
+          true <span class="blue">blue</span><br>
+          advantage
+        </h1>
+      </div>
+    </div>
+
+    <!-- RIGHT THIRD -->
+  
+  </section>
+
+  <!-- Animation: rise + robust reveal -->
+  <script>
+    window.addEventListener('load', () => {
+      const panel = document.getElementById('panel');
+
+      setTimeout(() => {
+        panel.classList.add('risen');
+
+        let revealed = false;
+        const reveal = () => {
+          if (revealed) return;
+          revealed = true;
+          panel.classList.add('ready');
+        };
+
+       panel.addEventListener('transitionend', (e) => {
+  if (e.propertyName === 'transform') reveal();
+});
+        setTimeout(reveal, 900); // fallback in case transitionend is skipped
+      }, 2200);
+    });
+  </script>
+</body>
+</html>
