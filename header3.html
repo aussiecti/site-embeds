@@ -38,6 +38,7 @@
   justify-items: end;                /* right-align contents */
   align-items: start;
   height: 100%;                      /* fill the grid track height */
+  padding-bottom: 60px; 
 }
 
   /* Left side headline + mark */
@@ -104,7 +105,8 @@
     }
     .col-left, .col-right { grid-column: 1; }
     .col-right {
-      align-items: flex-start;
+      align-items: flex-start; padding-bottom: 40px;
+      
       /* no min-height here to avoid overflow */
     }
     .right-logo { width: 42%; }
