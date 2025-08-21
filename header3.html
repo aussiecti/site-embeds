@@ -96,32 +96,64 @@
   .thumb:hover img { filter: none; transform: scale(1.04); }
 
   /* ---- Mobile (stack, no fixed panel) ---- */
-  @media (max-width: 767.98px) {
-    .wrap {
-      grid-template-columns: 1fr;
-      gap: 16px;
-      padding: 16px;
-      min-height: auto;                     /* avoid forcing height on phones */
-    }
-    .col-left, .col-right { grid-column: 1; }
-    .col-right {
-      align-items: flex-start; padding-bottom: 40px;
-      
-      /* no min-height here to avoid overflow */
-    }
-    .right-logo { width: 42%; }
-    .panel {
-      position: relative;                   /* was fixed: remove to avoid extra height/scroll */
-      left: auto; right: auto; width: 100%;
-      margin-top: 16px;
-      /* Keep the “rise” feel with transform instead of bottom on mobile if you like: */
-      transform: translateY(40px);
-      transition: transform 700ms cubic-bezier(.22,.84,.37,1), opacity 420ms ease;
-      opacity: 0;
-    }
-    .panel.risen { transform: translateY(0); opacity: 1; }
+ @media (max-width: 767.98px) {
+  .wrap {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 16px;
+    min-height: auto;
+    align-items: start;                 /* was stretch: don't stretch rows on mobile */
   }
 
+  .col-left,
+  .col-right {
+    grid-column: 1;
+    height: auto !important;            /* kill any inherited equal-height */
+    overflow: visible !important;       /* prevent a column-specific scrollbar */
+  }
+
+  /* (keep your existing) */
+  .col-right { padding-bottom: 40px; align-items: flex-start; }
+  .right-logo { width: 42%; }
+
+  /* Left header: ensure nothing can force horizontal/vertical scroll */
+  .left-top { 
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    max-width: 100%;
+    overflow: visible;
+  }
+  .left-top > * { min-width: 0; }       /* allow flex children to shrink */
+  .left-top img.header-mark {
+    width: clamp(160px, 70vw, 360px);
+    height: auto;
+    display: block;
+    max-width: 100%;
+  }
+  .left-top h1 {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    margin: 0;
+  }
+
+  /* Panel: already in normal flow and full width */
+  .panel {
+    align-self: stretch;
+    width: 100%;
+    max-width: 100%;
+    margin: 16px 0 0 0;
+    box-sizing: border-box;
+    transform: translateY(40px);
+    transition: transform 700ms cubic-bezier(.22,.84,.37,1), opacity 420ms ease;
+    opacity: 0;
+  }
+  .panel.risen { transform: translateY(0); opacity: 1; }
+}
+  /* Optional: make long words never force a widen */
+  .panel p { overflow-wrap: anywhere; }
+}
   /* ---- Tablet tweak (optional) ---- */
   @media (min-width: 768px) and (max-width: 991.98px) {
     .col-right { /* no min-height to keep total height compact */ }
