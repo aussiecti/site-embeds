@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Aussie CTI</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@600&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- Transparent background inside the iframe -->
+  <style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { background: transparent !important; height: 100%; }
+  body { margin: 0; font-family: 'Roboto', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; overflow-x: hidden;}
+  h1, h2, h3, h4, h5, h6 { font-family: 'Lexend', sans-serif; font-weight: 600; }
+
+  /* ---- Layout ---- */
+  .wrap {
+    min-height: 100%;                      /* was 100vh: avoids extra scroll inside iframe */
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    align-items: stretch;
+    padding: 24px;
+    box-sizing: border-box;
+  }
+  /* Progressive enhancement for modern browsers (safe in Sites too) */
+  @supports (min-height: 100dvh) {
+    .wrap { min-height: 100dvh; }
+  }
+
+  .col-left { grid-column: 1;  position: relative;          /* key: makes bottom/left positioning work */}
+.col-right {
+  grid-column: 2;
+  display: grid;
+  grid-template-rows: auto 1fr auto; /* logo / spacer / panel */
+  justify-items: end;                /* right-align contents */
+  align-items: start;
+  height: 100%;                      /* fill the grid track height */
+  padding-bottom: 60px; 
+}
+
+  /* Left side headline + mark */
+  .left-top {
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap; max-width: 680px;
+  }
+  .left-top img.header-mark { height: 56px; width: auto; }
+  .left-top h1 { margin: 0; line-height: 1.1; font-size: clamp(28px, 4vw, 54px); color: #111; }
+  .left-top h1 .blue { color: #2563eb; }
+
+
+/* CTA base */
+.quote-cta {
+  position: absolute;
+  left: 0;                     /* bottom-left inside .col-left’s padding box */
+  bottom: 0;
+  display: inline-block;
+  text-decoration: none;
+   cursor: pointer;
+  line-height: 0;              /* removes extra inline gap */
+  transform: translate(-4px, 4px); /* subtle nudge to visually hug the edges */
+}
+.quote-cta img {
+  width: clamp(120px, 18vw, 220px);   /* responsive but bounded */
+  height: auto;
+  display: block;
+}
+
+/* Hover/focus affordance (desktop) */
+@media (hover:hover) {
+  .quote-cta { transition: transform 180ms ease, filter 180ms ease; }
+  .quote-cta:hover { transform: translate(-4px, 4px) scale(1.03); }
+  .quote-cta:focus-visible { outline: 2px solid #2563eb; outline-offset: 2px; }
+}
+
+  /* Right sticker logo */
+  .right-logo {
+  justify-self: end;                 /* explicit right align */
+  width: 30%;
+  min-width: 120px;
+  max-width: 240px;
+  height: auto;
+  object-fit: contain;
+}
+
+.spacer { min-height: 0; }
+
+  /* Panel naturally sits on the bottom row; animate with transform */
+.panel {
+  position: relative;
+  width: min(520px, 100%);
+  background: rgba(255,255,255,0.78);
+  backdrop-filter: blur(8px);
+  border-radius: 16px;
+  box-shadow: 0 18px 40px rgba(0,0,0,0.28);
+  padding: 20px 20px 14px;
+
+  transform: translateY(60px);       /* start slightly lower */
+  opacity: 0;
+  transition: transform 700ms cubic-bezier(.22,.84,.37,1), opacity 420ms ease;
+}
+.panel.risen { transform: translateY(0); opacity: 1; }
+
+  /* Reveal */
+  .panel h2, .panel p, .thumbs { opacity: 0; transition: opacity 420ms ease; }
+  .panel.ready h2, .panel.ready p { opacity: 1; }
+  .panel.ready .thumbs { opacity: 1; transition-delay: 120ms; }
+
+  .panel h2 { margin: 0 0 6px; font-size: clamp(18px, 2.4vw, 24px); color: #111; text-align: left; }
+  .panel p  { margin: 0 0 10px; color: #2b2b2b; font-size: clamp(14px, 1.8vw, 16px); line-height: 1.45; }
+
+ 
+  /* ---- Mobile (stack, no fixed panel) ---- */
+ @media (max-width: 767.98px) {
+  .wrap {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 16px;
+    min-height: auto;
+    align-items: start;                 /* was stretch: don't stretch rows on mobile */
+  }
+
+  .col-left,
+  .col-right {
+    grid-column: 1;
+    height: auto !important;            /* kill any inherited equal-height */
+    overflow: visible !important;       /* prevent a column-specific scrollbar */
+  }
+
+/* Mobile: put CTA under the heading in normal flow */
+.quote-cta {
+  position: static;        /* no absolute on phones */
+  transform: none;
+  margin-top: 12px;
+}
+
+.quote-cta img {
+  width: clamp(150px, 60vw, 260px);
+  max-width: 100%;
+}
+  /* (keep your existing) */
+  .col-right { padding-bottom: 40px; align-items: flex-start; }
+  .right-logo { width: 42%; }
+
+  /* Left header: ensure nothing can force horizontal/vertical scroll */
+  .left-top { 
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    max-width: 100%;
+    overflow: visible;
+  }
+  .left-top > * { min-width: 0; }       /* allow flex children to shrink */
+  .left-top img.header-mark {
+    width: clamp(160px, 70vw, 360px);
+    height: auto;
+    display: block;
+    max-width: 100%;
+  }
+  .left-top h1 {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    margin: 0;
+  }
+
+  /* Panel: already in normal flow and full width */
+  .panel {
+    align-self: stretch;
+    width: 100%;
+    max-width: 100%;
+    margin: 16px 0 0 0;
+    box-sizing: border-box;
+     transform: none !important;
+    opacity: 1 !important;
+    transition: none !important;
+  }
+
+  /* Optional: make long words never force a widen */
+  .panel p { overflow-wrap: anywhere; }
+
+.panel h2, .panel p { opacity: 1 !important; transition: none !important; }
+}
+  /* ---- Tablet tweak (optional) ---- */
+  @media (min-width: 768px) and (max-width: 991.98px) {
+    .col-right { /* no min-height to keep total height compact */ }
+  }
+</style>
+
+</head>
+<body>
+  <section class="wrap" role="region" aria-label="Hero">
+    <!-- LEFT THIRD -->
+    <div class="col-left">
+      <div class="left-top">
+        <img class="header-mark"
+             src="https://res.cloudinary.com/ddkor0br0/image/upload/v1754972785/headertext_rebmeq.png"
+             alt="Header graphic">
+        <h1>
+          Drive with the<br>
+          true <span class="blue">blue</span><br>
+          advantage
+        </h1>
+      </div>
+      <a class="quote-cta" href="https://www.aussiecti.com.au/contact-form" aria-label="Request a quote">
+  <img src="https://res.cloudinary.com/ddkor0br0/image/upload/v1755747797/quote_e0evd9.png"
+       alt="Request a quote">
+</a>
+    </div>
+
+    <!-- RIGHT THIRD -->
+    <div class="col-right">
+      <img class="right-logo"
+           src="https://res.cloudinary.com/ddkor0br0/image/upload/v1754972552/logo_sticker_transparent_wvcvvj.png"
+           alt="Aussie CTI logo">
+
+	<div class="spacer" aria-hidden="true"></div>
+      <!-- Rising panel -->
+      <div id="panel" class="panel" aria-live="polite">
+        <h2>Built for Australian Conditions</h2>
+        <p>
+          Adjust pressures on the move at the push of a button. Each system is tailored to your setup,
+          with customisable high, medium and low presets—plus the flexibility to fine-tune pressures
+          using the rotary dial. Available in single, dual or multi-zone configurations to suit everything
+          from small rigids to full road trains.
+        </p>
+
+        
+      </div>
+    </div>
+  </section>
+
+  <!-- Animation: rise + robust reveal -->
+  <script>
+    window.addEventListener('load', () => {
+      const panel = document.getElementById('panel');
+
+      setTimeout(() => {
+        panel.classList.add('risen');
+
+        let revealed = false;
+        const reveal = () => {
+          if (revealed) return;
+          revealed = true;
+          panel.classList.add('ready');
+        };
+
+       panel.addEventListener('transitionend', (e) => {
+  if (e.propertyName === 'transform') reveal();
+});
+        setTimeout(reveal, 900); // fallback in case transitionend is skipped
+      }, 2200);
+    });
+  </script>
+</body>
+</html>
