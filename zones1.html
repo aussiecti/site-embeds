@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Aussie CTI – Zones</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    /* --- Reset / Base --- */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: transparent !important;   /* keep iframe background clear in Google Sites */
+      color: #f3f3f3;
+      font-family: 'Roboto', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      line-height: 1.45;
+      overflow: hidden;                      /* avoid inner scrollbars; let Sites set the frame */
+    }
+
+    /* --- Container: ensure a sensible floor on mobile so Sites doesn't collapse height --- */
+    .wrap {
+      width: 100%;
+      padding: 8px;
+    }
+    @media (max-width: 767.98px) {
+      /* Ensure the embed reports enough height on first paint */
+      html, body { min-height: 640px; }      /* adjust if you want it shorter/taller */
+      .wrap { min-height: 640px; }
+    }
+
+    /* --- Grid Layout --- */
+    .zones {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+    @media (min-width: 768px) {
+      .zones {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+      }
+    }
+
+    /* --- Card --- */
+    .card {
+      border-radius: 12px;
+      overflow: hidden;
+      outline: 1px solid rgba(255,255,255,0.1);
+    }
+    .card-inner {
+      display: flex;
+      flex-direction: column;
+      padding: 12px;
+    }
+
+    /* --- Media: reserve height up-front with aspect-ratio (no lazy-loading) --- */
+    .media {
+      /* Desktop/tablet: consistent panel height using aspect ratio so Sites measures correctly */
+      aspect-ratio: 16 / 10;     /* tweak to suit your artwork shape */
+      overflow: hidden;
+      transition: height 0.45s ease;
+    }
+    @media (max-width: 767.98px) {
+      .media {
+        aspect-ratio: 4 / 3;     /* a bit taller on mobile so the image reads well */
+      }
+    }
+    .media img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    /* Title + text */
+    .title {
+      font-family: 'Lexend', sans-serif;
+      font-weight: 700;
+      color: #d9d9d9;
+      text-align: center;
+      margin: 12px 8px 4px;
+      font-size: 1.05rem;
+      -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+    }
+
+    .details {
+      margin: 8px 8px 4px;
+      padding-left: 1.1rem;
+      opacity: 0;
+      max-height: 0;
+      overflow: hidden;
+      transition: opacity 0.35s ease 0.05s, max-height 0.45s ease;
+      -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+    }
+    .details li { margin: 6px 0; }
+
+    /* Hover behaviour (tablet/desktop with a mouse/trackpad only) */
+    @media (hover: hover) and (pointer: fine) and (min-width: 768px) {
+      .card:hover .media { height: 0; }                     /* image slides up/disappears */
+      .card:hover .details { opacity: 1; max-height: 480px; }
+    }
+
+    /* Keyboard focus (desktop) */
+    @media (min-width: 768px) {
+      .card:focus-within .media { height: 0; }
+      .card:focus-within .details { opacity: 1; max-height: 480px; }
+    }
+
+    /* Mobile: stack, always show details, no hover transforms */
+    @media (max-width: 767.98px) {
+      .details { opacity: 1; max-height: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap" aria-label="Aussie CTI zone configurations">
+    <div class="zones">
+      <!-- Single Zone -->
+      <article class="card">
+        <div class="card-inner">
+          <div class="media">
+            <img
+              src="https://res.cloudinary.com/ddkor0br0/image/upload/v1757632906/1-Configeration_brs26o.png"
+              alt="Single-Zone CTI system diagram"
+              sizes="(min-width:768px) 33vw, 100vw"
+            >
+          </div>
+          <h3 class="title">Single-Zone System</h3>
+          <ul class="details">
+            <li>Controls one group of tyres with a shared pressure setting</li>
+            <li>Ideal for drive-axle-only applications</li>
+            <li>Suits rigid trucks, off-road vehicles, and tractors</li>
+            <li>A simple, reliable solution for consistent loads or terrain</li>
+          </ul>
+        </div>
+      </article>
+
+      <!-- Dual Zone -->
+      <article class="card">
+        <div class="card-inner">
+          <div class="media">
+            <img
+              src="https://res.cloudinary.com/ddkor0br0/image/upload/v1757632909/2-Configeration_nqh07m.png"
+              alt="Dual-Zone CTI system diagram"
+              sizes="(min-width:768px) 33vw, 100vw"
+            >
+          </div>
+          <h3 class="title">Dual-Zone System</h3>
+          <ul class="details">
+            <li>Independently manages two tyre groups at different pressures</li>
+            <li>Commonly used for steer &amp; drive axles, or drive &amp; trailer</li>
+            <li>Supports internal or external air delivery to steer axles or trailers</li>
+            <li>Offers added flexibility for changing weights or conditions</li>
+          </ul>
+        </div>
+      </article>
+
+      <!-- Tri Zone -->
+      <article class="card">
+        <div class="card-inner">
+          <div class="media">
+            <img
+              src="https://res.cloudinary.com/ddkor0br0/image/upload/v1757632907/3-Configeration_ec8gvv.png"
+              alt="Tri-Zone CTI system diagram"
+              sizes="(min-width:768px) 33vw, 100vw"
+            >
+          </div>
+          <h3 class="title">Tri-Zone System</h3>
+          <ul class="details">
+            <li>Full independent control over three axle groups</li>
+            <li>Typically used for steer, drive, and trailer sets</li>
+            <li>Allows fine-tuned pressure across complex combinations</li>
+            <li>Built to handle varied loads and mixed terrain with ease</li>
+          </ul>
+        </div>
+      </article>
+    </div>
+  </div>
+</body>
+</html>
